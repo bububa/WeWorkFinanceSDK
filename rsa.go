@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinacesdk
 
 import (
 	"crypto"

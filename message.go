@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinancesdk
 
 // ActionType  // 消息动作
 type ActionType = string

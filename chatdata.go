@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinancesdk
 
 // ChatDataResponse 拉去消息返回值
 type ChatDataResponse struct {

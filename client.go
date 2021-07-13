@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinancesdk
 
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
 // #cgo CFLAGS: -I ${SRCDIR}/lib/

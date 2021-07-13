@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinancesdk
 
 // MediaData 媒体消息结构体
 type MediaData struct {

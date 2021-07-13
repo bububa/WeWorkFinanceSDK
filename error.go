@@ -1,4 +1,4 @@
-package WeWorkFinanceSDK
+package wxworkfinancesdk
 
 import (
 	"fmt"
