@@ -14,13 +14,10 @@ jobs:
 
     - name: Build
       env:
-        PKG_CONFIG_PATH: ./lib
-        DYLD_LIBRARY_PATH: ./lib
         CGO_LDFLAGS_ALLOW: '-w' 
-      run: go build -v ./...
+      run: go build -v --ldflags'-extldflags "-L./lib -lWeWorkFinanceSdk_C"' ./...
 
     - name: Test
       env:
-        PKG_CONFIG_PATH: ./lib
         CGO_LDFLAGS_ALLOW: '-w' 
-      run: go test -v ./...
+      run: go test -v --ldflags'-extldflags "-L./lib -lWeWorkFinanceSdk_C"' ./...
