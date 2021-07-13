@@ -1,6 +1,8 @@
 package wxworkfinancesdk
 
+// #cgo LDFLAGS: -Wl
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
+// #cgo CFLAGS: -Wall
 // #cgo CFLAGS: -I ${SRCDIR}/lib/
 // #include <stdlib.h>
 // #include "WeWorkFinanceSdk_C.h"
@@ -11,6 +13,7 @@ import (
 	"unsafe"
 )
 
+// Client
 type Client struct {
 	ptr C.WeWorkFinanceSdk_t
 }
@@ -41,8 +44,8 @@ func NewClient(corpId string, corpSecret string) (*Client, error) {
 }
 
 // Free  释放sdk，和NewClient成对使用
-func (this *Client) Free() {
-	C.DestroySdk(this.ptr)
+func (c *Client) Free() {
+	C.DestroySdk(c.ptr)
 }
 
 /* GetChatData
@@ -58,7 +61,7 @@ func (this *Client) Free() {
 
 {"errcode":0,"errmsg":"ok","chatdata":[{"seq":196,"msgid":"CAQQ2fbb4QUY0On2rYSAgAMgip/yzgs=","publickey_ver":3,"encrypt_random_key":"ftJ+uz3n/z1DsxlkwxNgE+mL38H42/KCvN8T60gbbtPD+Rta1hKTuQPzUzO6Hzne97MgKs7FfdDxDck/v8cDT6gUVjA2tZ/M7euSD0L66opJ/IUeBtpAtvgVSD5qhlaQjvfKJc/zPMGNK2xCLFYqwmQBZXbNT7uA69Fflm512nZKW/piK2RKdYJhRyvQnA1ISxK097sp9WlEgDg250fM5tgwMjujdzr7ehK6gtVBUFldNSJS7ndtIf6aSBfaLktZgwHZ57ONewWq8GJe7WwQf1hwcDbCh7YMG8nsweEwhDfUz+u8rz9an+0lgrYMZFRHnmzjgmLwrR7B/32Qxqd79A==","encrypt_chat_msg":"898WSfGMnIeytTsea7Rc0WsOocs0bIAerF6de0v2cFwqo9uOxrW9wYe5rCjCHHH5bDrNvLxBE/xOoFfcwOTYX0HQxTJaH0ES9OHDZ61p8gcbfGdJKnq2UU4tAEgGb8H+Q9n8syRXIjaI3KuVCqGIi4QGHFmxWenPFfjF/vRuPd0EpzUNwmqfUxLBWLpGhv+dLnqiEOBW41Zdc0OO0St6E+JeIeHlRZAR+E13Isv9eS09xNbF0qQXWIyNUi+ucLr5VuZnPGXBrSfvwX8f0QebTwpy1tT2zvQiMM2MBugKH6NuMzzuvEsXeD+6+3VRqL"}]}
 */
-func (this *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd string, timeout int) ([]ChatData, error) {
+func (c *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd string, timeout int) ([]ChatData, error) {
 	proxyC := C.CString(proxy)
 	passwdC := C.CString(passwd)
 	chatSlice := C.NewSlice()
@@ -68,12 +71,12 @@ func (this *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd s
 		C.FreeSlice(chatSlice)
 	}()
 
-	retC := C.GetChatData(this.ptr, C.ulonglong(seq), C.uint(limit), proxyC, passwdC, C.int(timeout), chatSlice)
+	retC := C.GetChatData(c.ptr, C.ulonglong(seq), C.uint(limit), proxyC, passwdC, C.int(timeout), chatSlice)
 	ret := int(retC)
 	if ret != 0 {
 		return nil, NewSDKErr(ret)
 	}
-	buf := this.GetContentFromSlice(chatSlice)
+	buf := c.GetContentFromSlice(chatSlice)
 	var data []ChatData
 	err := json.Unmarshal(buf, &data)
 	if err != nil {
@@ -88,7 +91,7 @@ func (this *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd s
 * @param [in]  encrypt_msg, getchatdata返回的encrypt_chat_msg
 * @return msg, 解密的消息明文
  */
-func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, error) {
+func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, error) {
 	encryptKeyC := C.CString(encryptKey)
 	encryptMsgC := C.CString(encrpytMsg)
 	msgSlice := C.NewSlice()
@@ -103,7 +106,7 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
 	if ret != 0 {
 		return nil, NewSDKErr(ret)
 	}
-	buf := this.GetContentFromSlice(slice)
+	buf := c.GetContentFromSlice(slice)
 	var baseMessage BaseMessage
 	err := json.Unmarshal(buf, &baseMessage)
 	if err != nil {
@@ -185,7 +188,7 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
  * @return media_data      返回本次拉取的媒体数据.MediaData结构体.内容包括data(数据内容)/outindexbuf(下次索引)/is_finish(拉取完成标记)
  */
 
-func (this *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, passwd string, timeout int) (*MediaData, error) {
+func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, passwd string, timeout int) (*MediaData, error) {
 	indexBufC := C.CString(indexBuf)
 	sdkFileIdC := C.CString(sdkFileId)
 	proxyC := C.CString(proxy)
@@ -199,7 +202,7 @@ func (this *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string
 		C.FreeMediaData(mediaDataC)
 	}()
 
-	retC := C.GetMediaData(this.ptr, indexBufC, sdkFileIdC, proxyC, passwdC, C.int(timeout), mediaDataC)
+	retC := C.GetMediaData(c.ptr, indexBufC, sdkFileIdC, proxyC, passwdC, C.int(timeout), mediaDataC)
 	ret := int(retC)
 	if ret != 0 {
 		return nil, NewSDKErr(ret)
@@ -212,10 +215,10 @@ func (this *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string
 }
 
 // DownloadMedia 下载MediaData
-func (this *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passwd string, timeout int) error {
+func (c *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passwd string, timeout int) error {
 	var indexBuf string
 	for {
-		mediaData, err := this.GetMediaData(indexBuf, sdkField, proxy, passwd)
+		mediaData, err := c.GetMediaData(indexBuf, sdkField, proxy, passwd)
 		if err != nil {
 			return err
 		}
@@ -229,6 +232,6 @@ func (this *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, pa
 }
 
 // GetContentFromSlice 转换C.struct_Slice_t为go bytes
-func (this *Client) GetContentFromSlice(slice *C.struct_Slice_t) []byte {
+func (c Client) GetContentFromSlice(slice *C.struct_Slice_t) []byte {
 	return C.GoBytes(C.GetContentFromSlice(slice), int(C.GetSliceLen(slice)))
 }

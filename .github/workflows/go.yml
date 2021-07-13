@@ -13,10 +13,13 @@ jobs:
         go-version: 1.16
 
     - name: Build
+      env:
+        CGO_LDFLAGS_ALLOW: '-Wl' 
       run: go build -v ./...
 
     - name: Test
       env:
+        CGO_LDFLAGS_ALLOW: '-Wl' 
         APPKEY: ${{ secrets.APPKEY }}
         SECRET: ${{ secrets.APP_SECRET }}
       run: go test -v ./...

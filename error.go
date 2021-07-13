@@ -15,8 +15,8 @@ type Error struct {
 }
 
 // Error implement error interface
-func (this Error) Error() string {
-	return fmt.Sprintf("%d:%s", this.ErrCode, this.ErrMsg)
+func (e Error) Error() string {
+	return fmt.Sprintf("%d:%s", e.ErrCode, e.ErrMsg)
 }
 
 // NewSDKError 新建错误

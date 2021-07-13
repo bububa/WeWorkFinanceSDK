@@ -7,8 +7,8 @@ type ChatDataResponse struct {
 }
 
 // IsError 判断是否错误
-func (this ChatDataResponse) IsError() bool {
-	return this.ErrCode != 0
+func (r ChatDataResponse) IsError() bool {
+	return r.ErrCode != 0
 }
 
 // ChatData 加密消息数据
