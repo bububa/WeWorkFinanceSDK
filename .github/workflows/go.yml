@@ -14,14 +14,12 @@ jobs:
 
     - name: Build
       env:
-        PKG_CONFIG_PATH: ${GOPATH}/src/github.com/bububa/WeWorkFinanceSDK/lib
+        PKG_CONFIG_PATH: ./lib
         CGO_LDFLAGS_ALLOW: '-w' 
       run: go build -v ./...
 
     - name: Test
       env:
-        PKG_CONFIG_PATH: ${GOPATH}/src/github.com/bububa/WeWorkFinanceSDK/lib
+        PKG_CONFIG_PATH: ./lib
         CGO_LDFLAGS_ALLOW: '-w' 
-        APPKEY: ${{ secrets.APPKEY }}
-        SECRET: ${{ secrets.APP_SECRET }}
       run: go test -v ./...
