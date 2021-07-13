@@ -14,12 +14,12 @@ jobs:
 
     - name: Build
       env:
-        CGO_LDFLAGS_ALLOW: '-Wl' 
+        CGO_LDFLAGS_ALLOW: '-w' 
       run: go build -v ./...
 
     - name: Test
       env:
-        CGO_LDFLAGS_ALLOW: '-Wl' 
+        CGO_LDFLAGS_ALLOW: '-w' 
         APPKEY: ${{ secrets.APPKEY }}
         SECRET: ${{ secrets.APP_SECRET }}
       run: go test -v ./...

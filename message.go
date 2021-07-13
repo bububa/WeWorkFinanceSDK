@@ -4,133 +4,199 @@ package wxworkfinancesdk
 type ActionType = string
 
 const (
-	SEND_ACTION   ActionType = "send"   // 发送消息
-	RECALL_ACTION ActionType = "recall" // 撤回消息
-	SWITCH_ACTION ActionType = "switch" // 切换企业日志
+	// SEND_ACTION 发送消息
+	SEND_ACTION ActionType = "send"
+	// RECALL_ACTION 撤回消息
+	RECALL_ACTION ActionType = "recall"
+	// SWITCH_ACTION 切换企业日志
+	SWITCH_ACTION ActionType = "switch"
 )
 
 // MessageType 消息类型
 type MessageType = string
 
 const (
-	UNKNOWN_MSG            MessageType = ""                   // 未定义
-	TEXT_MSG               MessageType = "text"               // 	文本消息
-	IMG_MSG                MessageType = "image"              // 	图片消息
-	REVOKE_MSG             MessageType = "revoke"             // 撤回消息
-	AGREE_MSG              MessageType = "agree"              // 同意消息
-	DISAGREE_MSG           MessageType = "disagree"           // 不同意消息
-	VOICE_MSG              MessageType = "voice"              // 语音消息
-	VIDEO_MSG              MessageType = "video"              // 视频消息
-	CARD_MSG               MessageType = "card"               // 名片消息
-	LOC_MSG                MessageType = "location"           // 位置消息
-	EMOTION_MSG            MessageType = "emotion"            // 表情消息
-	FILE_MSG               MessageType = "file"               // 文件消息
-	LINK_MSG               MessageType = "link"               // 链接消息
-	WEAPP_MSG              MessageType = "weapp"              // 小程序消息
-	CHATRECORD_MSG         MessageType = "chatrecord"         // 会话记录消息
-	TODO_MSG               MessageType = "todo"               // 待办消息
-	VOTE_MSG               MessageType = "vote"               // 投票消息
-	COLLECT_MSG            MessageType = "collect"            // 填表消息
-	REDPACKET_MSG          MessageType = "redpacket"          // 红包消息
-	MEETING_MSG            MessageType = "meeting"            // 会议邀请消息
-	DOC_MSG                MessageType = "docmsg"             // 在线文档消息
-	MARKDOWN_MSG           MessageType = "markdown"           // MarkDown格式消息
-	NEWS_MSG               MessageType = "news"               // 图文消息
-	CALENDAR_MSG           MessageType = "calendar"           // 日程消息
-	MIXED_MSG              MessageType = "mixed"              // 混合消息
-	MEETING_VOICE_CALL_MSG MessageType = "meeting_voice_call" // 音频存档消息
-	VOIP_DOC_SHARE_MSG     MessageType = "voip_doc_share"     // 音频共享文档
-	EXTERNAL_REDPACKET_MSG MessageType = "external_redpacket" // 互通红包消息
-	SPHFEED_MSG            MessageType = "sphfeed"            // 视频号消息
+	// UNKNOWN_MSG 未定义
+	UNKNOWN_MSG MessageType = ""
+	// TEXT_MSG 文本消息
+	TEXT_MSG MessageType = "text"
+	// IMG_MSG 图片消息
+	IMG_MSG MessageType = "image"
+	// REVOKE_MSG 撤回消息
+	REVOKE_MSG MessageType = "revoke"
+	// AGREE_MSG 同意消息
+	AGREE_MSG MessageType = "agree"
+	// DISAGREE_MSG 不同意消息
+	DISAGREE_MSG MessageType = "disagree"
+	// VOICE_MSG 语音消息
+	VOICE_MSG MessageType = "voice"
+	// VIDEO_MSG 视频消息
+	VIDEO_MSG MessageType = "video"
+	// CARD_MSG 名片消息
+	CARD_MSG MessageType = "card"
+	// LOC_MSG 位置消息
+	LOC_MSG MessageType = "location"
+	// EMOTION_MSG 表情消息
+	EMOTION_MSG MessageType = "emotion"
+	// FILE_MSG 文件消息
+	FILE_MSG MessageType = "file"
+	// LINK_MSG 链接消息
+	LINK_MSG MessageType = "link"
+	// WEAPP_MSG 小程序消息
+	WEAPP_MSG MessageType = "weapp"
+	// CHATRECORD_MSG 话记录消息
+	CHATRECORD_MSG MessageType = "chatrecord"
+	// TODO_MSG 待办消息
+	TODO_MSG MessageType = "todo"
+	// VOTE_MSG 投票消息
+	VOTE_MSG MessageType = "vote"
+	// COLLECT_MSG 填表消息
+	COLLECT_MSG MessageType = "collect"
+	// REDPACKET_MSG 红包消息
+	REDPACKET_MSG MessageType = "redpacket"
+	// MEETING_MSG 会议邀请消息
+	MEETING_MSG MessageType = "meeting"
+	// DOC_MSG 在线文档消息
+	DOC_MSG MessageType = "docmsg"
+	// MARKDOWN_MSG MarkDown格式消息
+	MARKDOWN_MSG MessageType = "markdown"
+	// NEWS_MSG 图文消息
+	NEWS_MSG MessageType = "news"
+	// CALENDAR_MSG 日程消息
+	CALENDAR_MSG MessageType = "calendar"
+	// MIXED_MSG 混合消息
+	MIXED_MSG MessageType = "mixed"
+	// METTING_VOICE_CALL_MSG 音频存档消息
+	MEETING_VOICE_CALL_MSG MessageType = "meeting_voice_call"
+	// VOIP_DOC_SHARE_MSG 音频共享文档
+	VOIP_DOC_SHARE_MSG MessageType = "voip_doc_share"
+	// EXTERNAL_REDPACKET_MSG 红包消息
+	EXTERNAL_REDPACKET_MSG MessageType = "external_redpacket"
+	// SPHFEED_MSG 视频号消息
+	SPHFEED_MSG MessageType = "sphfeed"
 )
 
 // EmotionType 表情类型
 type EmotionType = uint32
 
 const (
-	GIF EmotionType = 1 // gif表情
-	PNG EmotionType = 2 // png表情
+	// GIF gif表情
+	GIF EmotionType = 1
+	// PNG png表情
+	PNG EmotionType = 2
 )
 
 // ChatRecordType 每条聊天记录的具体消息类型
 type ChatRecordType = string
 
 const (
-	TEXT_REC_MSG    ChatRecordType = "ChatRecordText"     // 文本消息
-	IMG_REC_MSG     ChatRecordType = "ChatRecordImage"    // 图片消息
-	VOICE_REC_MSG   ChatRecordType = "ChatRecordVoice"    // 语音消息
-	VIDEO_REC_MSG   ChatRecordType = "ChatRecordVideo"    // 视频消息
-	CARD_REC_MSG    ChatRecordType = "ChatRecordCard"     // 名片消息
-	LOC_REC_MSG     ChatRecordType = "ChatRecordLocation" // 位置消息
-	EMOTION_REC_MSG ChatRecordType = "ChatRecordEmotion"  // 表情消息
-	FILE_REC_MSG    ChatRecordType = "ChatRecordFile"     // 文件消息
-	LINK_REC_MSG    ChatRecordType = "ChatRecordLink"     // 链接消息
-	WEAPP_REC_MSG   ChatRecordType = "ChatRecordWeapp"    // 小程序消息
-	MIXED_REC_MSG   ChatRecordType = "ChatRecordMixed"    // 混合消息
+	// TEXT_REC_MSG 文本消息
+	TEXT_REC_MSG ChatRecordType = "ChatRecordText"
+	// IMG_REC_MSG 图片消息
+	IMG_REC_MSG ChatRecordType = "ChatRecordImage"
+	// VOICE_REC_MSG 语音消息
+	VOICE_REC_MSG ChatRecordType = "ChatRecordVoice"
+	// VIDEO_REC_MSG 视频消息
+	VIDEO_REC_MSG ChatRecordType = "ChatRecordVideo"
+	// CARD_REC_MSG 名片消息
+	CARD_REC_MSG ChatRecordType = "ChatRecordCard"
+	// LOC_REC_MSG 位置消息
+	LOC_REC_MSG ChatRecordType = "ChatRecordLocation"
+	// EMOTION_REC_MSG 表情消息
+	EMOTION_REC_MSG ChatRecordType = "ChatRecordEmotion"
+	// FILE_REC_MSG 文件消息
+	FILE_REC_MSG ChatRecordType = "ChatRecordFile"
+	// LINK_REC_MSG 链接消息
+	LINK_REC_MSG ChatRecordType = "ChatRecordLink"
+	// WEAPP_REC_MSG 小程序消息
+	WEAPP_REC_MSG ChatRecordType = "ChatRecordWeapp"
+	// MIXED_REC_MSG 混合消息
+	MIXED_REC_MSG ChatRecordType = "ChatRecordMixed"
 )
 
 // VoteType 投票类型
 type VoteType = uint32
 
 const (
-	LAUNCH_VOTE VoteType = 101 // 发起投票
-	JOIN_VOTE   VoteType = 102 // 参与投票
+	// LAUNCH_VOTE 发起投票
+	LAUNCH_VOTE VoteType = 101
+	// JOIN_VOTE 参与投票
+	JOIN_VOTE VoteType = 102
 )
 
 // CollectDetailsType 表项类型
 type CollectDetailsType = string
 
 const (
-	TEXT   CollectDetailsType = "Text"   // 文本
-	NUMBER CollectDetailsType = "Number" // 数字
-	DATE   CollectDetailsType = "Date"   // 日期
-	TIME   CollectDetailsType = "Time"   // 时间
+	// TEXT 文本
+	TEXT CollectDetailsType = "Text"
+	// NUMBER 数字
+	NUMBER CollectDetailsType = "Number"
+	// DATE 日期
+	DATE CollectDetailsType = "Date"
+	// TIME 时间
+	TIME CollectDetailsType = "Time"
 )
 
 // RedpacketType 红包类型
 type RedpacketType = uint32
 
 const (
-	NORMAL_REDPACKET    RedpacketType = 1 // 普通红包
-	SPELL_REDPACKET     RedpacketType = 2 // 拼手气群红包
-	INCENTIVE_REDPACKET RedpacketType = 3 // 激励群红包
+	// NORMAL_REDPACKET 普通红包
+	NORMAL_REDPACKET RedpacketType = 1
+	// SPELL_REDPACKET 拼手气群红包
+	SPELL_REDPACKET RedpacketType = 2
+	// INCENTIVE_REDPACKET 励群红包
+	INCENTIVE_REDPACKET RedpacketType = 3
 )
 
 // MeetingType 会议消息类型
 type MeetingType = uint32
 
 const (
-	LAUNCH_MEETING MeetingType = 101 // 发起会议邀请消息
-	HANDLE_MEETING MeetingType = 102 // 处理会议邀请消息
+	// LAUNCH_MEETING 发起会议邀请消息
+	LAUNCH_MEETING MeetingType = 101
+	// HANDLE_MEETING 处理会议邀请消息
+	HANDLE_MEETING MeetingType = 102
 )
 
 // MeetingStatus 会议邀请处理状态
 type MeetingStatus = uint32
 
 const (
-	JOIN_MEETING     MeetingStatus = 1 // 参加会议
-	REJECT_MEETING   MeetingStatus = 2 // 拒绝会议
-	PENDING_MEETING  MeetingStatus = 3 // 待定
-	NOINVITE_MEETING MeetingStatus = 4 // 未被邀请
-	CANCELED_MEETING MeetingStatus = 5 // 会议已取消
-	EXPIRED_MEETING  MeetingStatus = 6 // 会议已过期
-	ABSENT_MEETING   MeetingStatus = 7 // 不在房间内
+	// JOIN_MEETING 参加会议
+	JOIN_MEETING MeetingStatus = 1
+	// REJECT_MEETING 绝会议
+	REJECT_MEETING MeetingStatus = 2
+	// PENDING_MEETING 待定
+	PENDING_MEETING MeetingStatus = 3
+	// NOINVITE_MEETING 未被邀请
+	NOINVITE_MEETING MeetingStatus = 4
+	// CANCELED_MEETING 会议已取消
+	CANCELED_MEETING MeetingStatus = 5
+	// EXPIRED_MEETING 会议已过期
+	EXPIRED_MEETING MeetingStatus = 6
+	// ABSENT_MEETING 不在房间内
+	ABSENT_MEETING MeetingStatus = 7
 )
 
 // SphfeedType 视频号消息类型
 type SphfeedType = uint32
 
 const (
+	// SPHFEED_IMAGE 图片
 	SPHFEED_IMAGE SphfeedType = 2
+	// SPHFEED_VIDEO 视频
 	SPHFEED_VIDEO SphfeedType = 4
-	SPHFEED_LIVE  SphfeedType = 9
+	// SPHFEED_LIVE 直播
+	SPHFEED_LIVE SphfeedType = 9
 )
 
 // Message 会话消息
 type Message interface {
-	ID() string                // 消息ID
-	GetMsgType() MessageType   // 消息类型
-	GetActionType() ActionType // 消息动作类型
+	ID() string               // 消息ID
+	MessageType() MessageType // 消息类型
+	ActionType() ActionType   // 消息动作类型
 }
 
 // BaseMessage 会话消息公共字段
@@ -145,18 +211,18 @@ type BaseMessage struct {
 }
 
 // ID implement Message interface
-func (this BaseMessage) ID() string {
-	return this.MsgId
+func (m BaseMessage) ID() string {
+	return m.MsgId
 }
 
 // MessageType implement Message interface
-func (this BaseMessage) MessageType() MessageType {
-	return this.MsgType
+func (m BaseMessage) MessageType() MessageType {
+	return m.MsgType
 }
 
 // ActionType Message interface
-func (this BaseMessage) ActionType() ActionType {
-	return this.Action
+func (m BaseMessage) ActionType() ActionType {
+	return m.Action
 }
 
 // TextMessage 文字消息
@@ -387,17 +453,17 @@ type SwitchMessage struct {
 }
 
 // ID implement Message interface
-func (this SwitchMessage) ID() string {
-	return this.MsgId
+func (m SwitchMessage) ID() string {
+	return m.MsgId
 }
 
 // MessageType implement Message interface
-func (this SwitchMessage) MessageType() MessageType {
+func (m SwitchMessage) MessageType() MessageType {
 	return UNKNOWN_MSG
 }
 
 // ActionType implement ActionType interface
-func (this SwitchMessage) ActionType() ActionType {
+func (m SwitchMessage) ActionType() ActionType {
 	return SWITCH_ACTION
 }
 

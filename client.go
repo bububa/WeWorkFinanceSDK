@@ -12,7 +12,7 @@ import (
 	"unsafe"
 )
 
-// Client
+// Client Client对象
 type Client struct {
 	ptr C.WeWorkFinanceSdk_t
 }
@@ -204,7 +204,7 @@ func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, p
 func (c *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passwd string, timeout int) error {
 	var indexBuf string
 	for {
-		mediaData, err := c.GetMediaData(indexBuf, sdkField, proxy, passwd)
+		mediaData, err := c.GetMediaData(indexBuf, sdkField, proxy, passwd, timeout)
 		if err != nil {
 			return err
 		}
