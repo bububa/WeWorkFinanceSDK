@@ -66,7 +66,7 @@ const (
 	CALENDAR_MSG MessageType = "calendar"
 	// MIXED_MSG 混合消息
 	MIXED_MSG MessageType = "mixed"
-	// METTING_VOICE_CALL_MSG 音频存档消息
+	// MEETING_VOICE_CALL_MSG 音频存档消息
 	MEETING_VOICE_CALL_MSG MessageType = "meeting_voice_call"
 	// VOIP_DOC_SHARE_MSG 音频共享文档
 	VOIP_DOC_SHARE_MSG MessageType = "voip_doc_share"
