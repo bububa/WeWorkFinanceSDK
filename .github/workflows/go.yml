@@ -15,6 +15,7 @@ jobs:
     - name: Build
       env:
         PKG_CONFIG_PATH: ./lib
+        DYLD_LIBRARY_PATH: ./lib
         CGO_LDFLAGS_ALLOW: '-w' 
       run: go build -v ./...
 
