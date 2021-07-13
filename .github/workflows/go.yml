@@ -14,6 +14,7 @@ jobs:
 
     - name: Build
       env:
+        PKG_CONFIG_PATH: ${GOPATH}/src/github.com/bububa/WeWorkFinanceSDK/lib
         CGO_LDFLAGS_ALLOW: '-w' 
       run: go build -v ./...
 
