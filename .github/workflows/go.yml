@@ -19,6 +19,7 @@ jobs:
 
     - name: Test
       env:
+        PKG_CONFIG_PATH: $GOPATH/src/github.com/bububa/WeWorkFinanceSDK/lib
         CGO_LDFLAGS_ALLOW: '-w' 
         APPKEY: ${{ secrets.APPKEY }}
         SECRET: ${{ secrets.APP_SECRET }}
