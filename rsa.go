@@ -1,4 +1,4 @@
-package wxworkfinacesdk
+package wxworkfinancesdk
 
 import (
 	"crypto"
