@@ -1,4 +1,4 @@
-prefix=${GOPATH}/src/github.com/bububa/WeWorkFinanceSDK
+prefix=./
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${exec_prefix}/lib
