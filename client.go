@@ -84,7 +84,7 @@ func (c *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd stri
 // @return msg, 解密的消息明文
 func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, error) {
 	encryptKeyC := C.CString(encryptKey)
-	encryptMsgC := C.CString(encrpytMsg)
+	encryptMsgC := C.CString(encryptMsg)
 	msgSlice := C.NewSlice()
 	defer func() {
 		C.free(unsafe.Pointer(encryptKeyC))
@@ -97,7 +97,7 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 	if ret != 0 {
 		return nil, NewSDKErr(ret)
 	}
-	buf := c.GetContentFromSlice(slice)
+	buf := c.GetContentFromSlice(msgSlice)
 	var baseMessage BaseMessage
 	err := json.Unmarshal(buf, &baseMessage)
 	if err != nil {
