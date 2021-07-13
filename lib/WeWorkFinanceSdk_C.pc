@@ -1,0 +1,10 @@
+prefix=$GOPATH/src/github.com/bububa/WeWorkFinanceSDK
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${exec_prefix}/lib
+
+Name: WeWorkFinanceSdk_C
+Description: The WeWorkFinanceSDK C library
+Version: 1.2
+Libs: -lhello -L${libdir}
+Cflags: -I${includedir}

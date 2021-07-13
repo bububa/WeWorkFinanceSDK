@@ -1,5 +1,6 @@
 package wxworkfinancesdk
 
+// #cgo pkg-config: –define-variable=prefix=. WeWorkFinanceSdk_C
 // #cgo LDFLAGS: -w -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
 // #cgo CFLAGS: -Wall
 // #cgo CFLAGS: -I ${SRCDIR}/lib/
