@@ -1,14 +1,17 @@
 package WeWorkFinanceSDK
 
+// ChatDataResponse 拉去消息返回值
 type ChatDataResponse struct {
 	Error
 	ChatDataList []ChatData `json:"chatdata,omitempty"`
 }
 
+// IsError 判断是否错误
 func (this ChatDataResponse) IsError() bool {
 	return this.ErrCode != 0
 }
 
+// ChatData 加密消息数据
 type ChatData struct {
 	Seq              uint64 `json:"seq,omitempty"`                // 消息的seq值，标识消息的序号。再次拉取需要带上上次回包中最大的seq。Uint64类型，范围0-pow(2,64)-1
 	MsgId            string `json:"msgid,omitempty"`              // 消息id，消息的唯一标识，企业可以使用此字段进行消息去重。

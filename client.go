@@ -1,19 +1,21 @@
 package WeWorkFinanceSDK
 
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
-// #cgo CFLAGS: -I ./lib/
+// #cgo CFLAGS: -I ${SRCDIR}/lib/
 // #include <stdlib.h>
 // #include "WeWorkFinanceSdk_C.h"
 import "C"
-import "unsafe"
-import "errors"
-import "encoding/json"
+import (
+	"encoding/json"
+	"io"
+	"unsafe"
+)
 
 type Client struct {
 	ptr C.WeWorkFinanceSdk_t
 }
 
-/**
+/* NewClient
  * 初始化函数
  *
  * @param [in]  corpid      调用企业的企业id，例如：wwd08c8exxxx5ab44d，可以在企业微信管理端--我的企业--企业信息查看
@@ -38,11 +40,12 @@ func NewClient(corpId string, corpSecret string) (*Client, error) {
 	}, nil
 }
 
+// Free  释放sdk，和NewClient成对使用
 func (this *Client) Free() {
 	C.DestroySdk(this.ptr)
 }
 
-/**
+/* GetChatData
 * 拉取聊天记录函数
 *
 *
@@ -79,7 +82,7 @@ func (this *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd s
 	return data, nil
 }
 
-/**
+/* DecryptData
 * @brief 解析密文.企业微信自有解密内容
 * @param [in]  encrypt_key, getchatdata返回的encrypt_random_key,使用企业自持对应版本秘钥RSA解密后的内容
 * @param [in]  encrypt_msg, getchatdata返回的encrypt_chat_msg
@@ -107,10 +110,10 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
 		return nil, err
 	}
 	var msg Message
-	if baseMessage.Action == SWITCH_ACTION {
+	if baseMessage.ActionType() == SWITCH_ACTION {
 		msg = SwitchMessage{}
 	} else {
-		switch baseMessage.MsgType {
+		switch baseMessage.MessageType() {
 		case TEXT_MSG:
 			msg = TextMessage{}
 		case IMG_MSG:
@@ -118,7 +121,7 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
 		case REVOKE_MSG:
 			msg = RevokeMessage{}
 		case AGREE_MSG, DISAGREE_MSG:
-			msg = AgreeMessage{}
+			msg = AggreeMessage{}
 		case VOICE_MSG:
 			msg = VoiceMessage{}
 		case VIDEO_MSG:
@@ -143,7 +146,7 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
 			msg = VoteMessage{}
 		case COLLECT_MSG:
 			msg = CollectMessage{}
-		case REDPACKET_MSG:
+		case REDPACKET_MSG, EXTERNAL_REDPACKET_MSG:
 			msg = RedpacketMessage{}
 		case MEETING_MSG:
 			msg = MeetingMessage{}
@@ -161,13 +164,15 @@ func (this *Client) DecryptData(encryptKey string, encryptMsg string) (Message, 
 			msg = MeetingVoiceCallMessage{}
 		case VOIP_DOC_SHARE_MSG:
 			msg = VoipDocShareMessage{}
+		case SPHFEED_MSG:
+			msg = SphfeedMessage{}
 		}
 	}
 	err = json.Unmarshal(buf, &msg)
 	return msg, err
 }
 
-/**
+/* GetMediaData
  * 拉取媒体消息函数
  * Return值=0表示该API调用成功
  *
@@ -206,6 +211,24 @@ func (this *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string
 	}, nil
 }
 
+// DownloadMedia 下载MediaData
+func (this *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passwd string, timeout int) error {
+	var indexBuf string
+	for {
+		mediaData, err := this.GetMediaData(indexBuf, sdkField, proxy, passwd)
+		if err != nil {
+			return err
+		}
+		w.Write(mediaData.Data)
+		if mediaData.IsFinish {
+			break
+		}
+		indexBuf = mediaData.OutIndexBuf
+	}
+	return nil
+}
+
+// GetContentFromSlice 转换C.struct_Slice_t为go bytes
 func (this *Client) GetContentFromSlice(slice *C.struct_Slice_t) []byte {
 	return C.GoBytes(C.GetContentFromSlice(slice), int(C.GetSliceLen(slice)))
 }
