@@ -1,6 +1,6 @@
 package wxworkfinancesdk
 
-// #cgo LDFLAGS: -Wl
+// #cgo LDFLAGS: -Wl,
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
 // #cgo CFLAGS: -Wall
 // #cgo CFLAGS: -I ${SRCDIR}/lib/
