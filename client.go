@@ -7,7 +7,9 @@ package wxworkfinancesdk
 // #include "WeWorkFinanceSdk_C.h"
 import "C"
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"unsafe"
 )
@@ -30,8 +32,8 @@ func NewClient(corpId string, corpSecret string) (*Client, error) {
 	}()
 	retC := C.Init(ptr, corpIdC, corpSecretC)
 	ret := int(retC)
-	if ret == 0 {
-		return nil, NewSDKErr(ret)
+	if ret != 0 {
+		return nil, NewSDKErr(ret, SDKInitErrMsg)
 	}
 	return &Client{
 		ptr: ptr,
@@ -64,17 +66,20 @@ func (c *Client) GetChatData(seq uint64, limit uint64, proxy string, passwd stri
 	}()
 
 	retC := C.GetChatData(c.ptr, C.ulonglong(seq), C.uint(limit), proxyC, passwdC, C.int(timeout), chatSlice)
-	ret := int(retC)
-	if ret != 0 {
-		return nil, NewSDKErr(ret)
+	if ret := int(retC); ret != 0 {
+		return nil, NewSDKErr(ret, GetChatDataErrMsg)
 	}
-	buf := c.GetContentFromSlice(chatSlice)
-	var data []ChatData
-	err := json.Unmarshal(buf, &data)
-	if err != nil {
-		return nil, err
+	buf := BufferPool()
+	defer BufferPoolRelease(buf)
+	c.GetContentFromSlice(chatSlice, buf)
+	var data ChatDataResponse
+	if err := json.NewDecoder(buf).Decode(&data); err != nil {
+		return nil, errors.Join(err, NewSDKErr(-1, GetChatDataErrMsg))
 	}
-	return data, nil
+	if data.IsError() {
+		return nil, data.Error
+	}
+	return data.ChatDataList, nil
 }
 
 // DecryptData 解析密文.企业微信自有解密内容
@@ -92,15 +97,18 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 	}()
 
 	retC := C.DecryptData(encryptKeyC, encryptMsgC, msgSlice)
-	ret := int(retC)
-	if ret != 0 {
-		return nil, NewSDKErr(ret)
+	if ret := int(retC); ret != 0 {
+		return nil, NewSDKErr(ret, DecryptErrMsg)
 	}
-	buf := c.GetContentFromSlice(msgSlice)
+	buf := BufferPool()
+	defer BufferPoolRelease(buf)
+	c.GetContentFromSlice(msgSlice, buf)
+	r := ReaderPool(buf.Bytes())
+	defer ReaderPoolRelease(r)
 	var baseMessage BaseMessage
-	err := json.Unmarshal(buf, &baseMessage)
-	if err != nil {
-		return nil, err
+	decoder := json.NewDecoder(r)
+	if err := decoder.Decode(&baseMessage); err != nil {
+		return nil, errors.Join(err, NewSDKErr(-1, DecryptErrMsg))
 	}
 	var msg Message
 	if baseMessage.ActionType() == SWITCH_ACTION {
@@ -161,8 +169,11 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 			msg = SphfeedMessage{}
 		}
 	}
-	err = json.Unmarshal(buf, &msg)
-	return msg, err
+	r.Seek(0, 0)
+	if err := decoder.Decode(&msg); err != nil {
+		return nil, errors.Join(err, NewSDKErr(-1, DecryptErrMsg))
+	}
+	return msg, nil
 }
 
 // GetMediaData 拉取媒体消息函数
@@ -174,7 +185,7 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 // @param [in]  indexbuf        媒体消息分片拉取，需要填入每次拉取的索引信息。首次不需要填写，默认拉取512k，后续每次调用只需要将上次调用返回的outindexbuf填入即可。
 // @param [in]  timeout         超时时间，单位秒
 // @return media_data      返回本次拉取的媒体数据.MediaData结构体.内容包括data(数据内容)/outindexbuf(下次索引)/is_finish(拉取完成标记)
-func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, passwd string, timeout int) (*MediaData, error) {
+func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, passwd string, timeout int, data *MediaData) error {
 	indexBufC := C.CString(indexBuf)
 	sdkFileIdC := C.CString(sdkFileId)
 	proxyC := C.CString(proxy)
@@ -189,23 +200,22 @@ func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, p
 	}()
 
 	retC := C.GetMediaData(c.ptr, indexBufC, sdkFileIdC, proxyC, passwdC, C.int(timeout), mediaDataC)
-	ret := int(retC)
-	if ret != 0 {
-		return nil, NewSDKErr(ret)
+	if ret := int(retC); ret != 0 {
+		return NewSDKErr(ret, GetMediaDataErrMsg)
 	}
-	return &MediaData{
-		OutIndexBuf: C.GoString(C.GetOutIndexBuf(mediaDataC)),
-		Data:        C.GoBytes(unsafe.Pointer(C.GetData(mediaDataC)), C.GetDataLen(mediaDataC)),
-		IsFinish:    int(C.IsMediaDataFinish(mediaDataC)) == 1,
-	}, nil
+	data.OutIndexBuf = C.GoString(C.GetOutIndexBuf(mediaDataC))
+	data.Data = C.GoBytes(unsafe.Pointer(C.GetData(mediaDataC)), C.GetDataLen(mediaDataC))
+	data.IsFinish = int(C.IsMediaDataFinish(mediaDataC)) == 1
+	return nil
 }
 
 // DownloadMedia 下载MediaData
-func (c *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passwd string, timeout int) error {
+func (c *Client) DownloadMedia(w io.Writer, sdkFileId string, proxy string, passwd string, timeout int) error {
 	var indexBuf string
+	mediaData := MediaDataPool()
+	defer MediaDataPoolRelease(mediaData)
 	for {
-		mediaData, err := c.GetMediaData(indexBuf, sdkField, proxy, passwd, timeout)
-		if err != nil {
+		if err := c.GetMediaData(indexBuf, sdkFileId, proxy, passwd, timeout, mediaData); err != nil {
 			return err
 		}
 		w.Write(mediaData.Data)
@@ -217,7 +227,44 @@ func (c *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passw
 	return nil
 }
 
+// DownloadMediaZeroAlloc 下载MediaData zero mem alloc version
+func (c *Client) DownloadMediaZeroAlloc(w io.Writer, sdkFileId string, proxy string, passwd string, timeout int) error {
+	var indexBuf string
+	mediaData := MediaDataPool()
+	defer MediaDataPoolRelease(mediaData)
+	indexBufC := C.CString(indexBuf)
+	sdkFileIdC := C.CString(sdkFileId)
+	proxyC := C.CString(proxy)
+	passwdC := C.CString(passwd)
+	mediaDataC := C.NewMediaData()
+	defer func() {
+		C.free(unsafe.Pointer(indexBufC))
+		C.free(unsafe.Pointer(sdkFileIdC))
+		C.free(unsafe.Pointer(proxyC))
+		C.free(unsafe.Pointer(passwdC))
+		C.FreeMediaData(mediaDataC)
+	}()
+	for {
+		retC := C.GetMediaData(c.ptr, indexBufC, sdkFileIdC, proxyC, passwdC, C.int(timeout), mediaDataC)
+		if ret := int(retC); ret != 0 {
+			return NewSDKErr(ret, GetMediaDataErrMsg)
+		}
+		indexBufC = C.GetOutIndexBuf(mediaDataC)
+		l := C.GetDataLen(mediaDataC)
+		bs := (*[1 << 30]byte)(unsafe.Pointer(C.GetData(mediaDataC)))[:l:l]
+		// bs := C.GoBytes(unsafe.Pointer(C.GetData(mediaDataC)), C.GetDataLen(mediaDataC))
+		w.Write(bs)
+		if int(C.IsMediaDataFinish(mediaDataC)) == 1 {
+			break
+		}
+	}
+	return nil
+}
+
 // GetContentFromSlice 转换C.struct_Slice_t为go bytes
-func (c Client) GetContentFromSlice(slice *C.struct_Slice_t) []byte {
-	return C.GoBytes(unsafe.Pointer(C.GetContentFromSlice(slice)), C.GetSliceLen(slice))
+func (c Client) GetContentFromSlice(slice *C.struct_Slice_t, buf *bytes.Buffer) {
+	l := C.GetSliceLen(slice)
+	bs := (*[1 << 30]byte)(unsafe.Pointer(C.GetContentFromSlice(slice)))[:l:l]
+	// buf.Write(C.GoBytes(unsafe.Pointer(C.GetContentFromSlice(slice)), C.GetSliceLen(slice)))
+	buf.Write(bs)
 }

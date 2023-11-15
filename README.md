@@ -24,7 +24,7 @@ import (
 
 func main() {
     corpId := "企业ID"
-    corpSecre := "secret"
+    corpSecret := "secret"
     clt, err := sdk.NewClient(corpId, corpSecret)
     if err != nil {
         log.Fatalln(err)
