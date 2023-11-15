@@ -1,6 +1,6 @@
 package wxworkfinancesdk
 
-// #cgo LDFLAGS: -w -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
+// #cgo LDFLAGS: -L${SRCDIR}/lib -lWeWorkFinanceSdk_C
 // #cgo CFLAGS: -Wall
 // #cgo CFLAGS: -I ${SRCDIR}/lib/
 // #include <stdlib.h>
@@ -14,7 +14,7 @@ import (
 
 // Client Client对象
 type Client struct {
-	ptr C.WeWorkFinanceSdk_t
+	ptr *C.WeWorkFinanceSdk_t
 }
 
 // NewClient 初始化函数
@@ -91,7 +91,7 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 		C.FreeSlice(msgSlice)
 	}()
 
-	retC := C.DecryptData(encryptKey, encryptMsg, msgSlice)
+	retC := C.DecryptData(encryptKeyC, encryptMsgC, msgSlice)
 	ret := int(retC)
 	if ret != 0 {
 		return nil, NewSDKErr(ret)
@@ -195,7 +195,7 @@ func (c *Client) GetMediaData(indexBuf string, sdkFileId string, proxy string, p
 	}
 	return &MediaData{
 		OutIndexBuf: C.GoString(C.GetOutIndexBuf(mediaDataC)),
-		Data:        C.GoBytes(C.GetData(mediaDataC), int(C.GetDataLen(mediaDataC))),
+		Data:        C.GoBytes(unsafe.Pointer(C.GetData(mediaDataC)), C.GetDataLen(mediaDataC)),
 		IsFinish:    int(C.IsMediaDataFinish(mediaDataC)) == 1,
 	}, nil
 }
@@ -219,5 +219,5 @@ func (c *Client) DownloadMedia(w io.Writer, sdkField string, proxy string, passw
 
 // GetContentFromSlice 转换C.struct_Slice_t为go bytes
 func (c Client) GetContentFromSlice(slice *C.struct_Slice_t) []byte {
-	return C.GoBytes(C.GetContentFromSlice(slice), int(C.GetSliceLen(slice)))
+	return C.GoBytes(unsafe.Pointer(C.GetContentFromSlice(slice)), C.GetSliceLen(slice))
 }
