@@ -1,6 +1,6 @@
 # This is an example .goreleaser.yml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
-project_name: "oceanengine"
+project_name: "wxworkfinancesdk"
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -10,7 +10,7 @@ before:
 builds:
   - skip: true
 archives:
-  - id: oceanengine
+  - id: wxworkfinancesdk
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_

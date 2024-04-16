@@ -40,8 +40,8 @@ func NewClient(corpId string, corpSecret string) (*Client, error) {
 	}, nil
 }
 
-// Free  释放sdk，和NewClient成对使用
-func (c *Client) Free() {
+// Destroy  释放sdk，和NewClient成对使用
+func (c *Client) Destroy() {
 	C.DestroySdk(c.ptr)
 }
 
@@ -103,7 +103,16 @@ func (c *Client) DecryptData(encryptKey string, encryptMsg string) (Message, err
 	buf := BufferPool()
 	defer BufferPoolRelease(buf)
 	c.GetContentFromSlice(msgSlice, buf)
-	r := ReaderPool(buf.Bytes())
+	bs := buf.Bytes()
+	// handle illegal escape character in text
+	for i := 0; i < len(bs); {
+		if bs[i] < 0x20 {
+			bs = append(bs[:i], bs[i+1:]...)
+			continue
+		}
+		i++
+	}
+	r := ReaderPool(bs)
 	defer ReaderPoolRelease(r)
 	var baseMessage BaseMessage
 	decoder := json.NewDecoder(r)

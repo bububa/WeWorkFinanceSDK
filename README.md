@@ -29,7 +29,7 @@ func main() {
     if err != nil {
         log.Fatalln(err)
     }
-    defer clt.Free()
+    defer clt.Destroy()
     var (
         seq uint64 
         limit uint64 = 1000
@@ -59,7 +59,7 @@ func main() {
             if msg.MessageType() == sdk.IMG_MSG {
                 var (
                     w = new(bytes.Buffer) 
-                    sdkField = msg.(sdk.ImageMessage).SdkFieldId
+                    sdkField = msg.(sdk.ImageMessage).SdkFileId
                 )
                 err := clt.DownloadMedia(w, sdkField, proxy, passwd, timeout)
                 if err != nil {
